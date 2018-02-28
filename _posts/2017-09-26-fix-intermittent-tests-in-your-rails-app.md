@@ -25,46 +25,28 @@ you ask?
 
 It is quite easy to install, just add `gem minitest-bisect` to your `Gemfile` and you’re good to go. After that run your test again and when it fails, note the seed number where it fails.
 
-```
-project_name master % bin/rails test
-Running via Spring preloader in process 19316
-Run options: --seed 30692
-# Running:
-........F
-```
+<script
+src="https://gist.github.com/iamarmanjon/fc3edbbdc9b9039170f2ebc814e14f97.js"></script>
 
 Then after seeing your test fails, run it again with `minitest-bisect`.
 
-```
-bundle exec minitest_bisect --seed 9808 -Itest test/
-reproducing... in 3.08 sec
-Reproduction run passed? Aborting.
-Try running with MTB_VERBOSE=2 to verify.
-```
+<script
+src="https://gist.github.com/iamarmanjon/0ab4fea5765edd753acf9426fd8472b9.js"></script>
 
 You may see some problems at first when running it like this, so we can just follow and add the `MTB_VERBOSE=2` to our command.
 
-```
-MTB_VERBOSE=2 bundle exec minitest_bisect --seed 9808 -Itest test/
-lib/rails/test_unit/minitest_plugin.rb:62:in `plugin_rails_options': invalid option: --server (OptionParser::InvalidOption)
-```
+<script
+src="https://gist.github.com/iamarmanjon/4cd25c4f7646a9eb6076eeb65618eb44.js"></script>
 
 Now, if you see an error with `OptionParser::InvalidOptionlike` above, it means that you are running Rails version ≤5.1.2. There’s [pending issue][2] that can be solved by upgrading to at least 5.1.3. Once you do that, run again the command. Don’t be surprised if it looks like it’s looping (running the test again and again). Wait for it.
 
-```
-bundle exec minitest_bisect --seed 9808 -Itest test/
-...
-...
-...
-Final reproduction:
-Run options: --seed 9808 -n "/^(?:test_new_employees_sorts_specified_time))$/"
-```
+<script
+src="https://gist.github.com/iamarmanjon/e4c89d99a01ecc8f9f85a78182640147.js"></script>
 
 You’ll see this `Final reproduction:` block with the `Run options` take note of this whole command. This is the command you’re supposed to run every time to fix the intermittent error you are currently getting.
 
-```
-bin/rails test test/ --seed 9808 -n "/^(?:test_new_employees_sorts_specified_time))$/"
-```
+<script
+src="https://gist.github.com/iamarmanjon/3e7e028db77543129486b6835858cc18.js"></script>
 
 For my problem, I need to change how I deal with time and my sample data is off so I had to fix that too.
 
